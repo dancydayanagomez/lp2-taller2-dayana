@@ -28,5 +28,55 @@
     "stock": 0,
     "activo": true,
     "categoria": "Audio"
-  }
+  },
+{
+  "sku": "TEC-003",
+  "marca": "HP",
+  "nombre": "Teclado mecánico HyperX Alloy",
+  "precio": 289000,
+  "foto": "images/teclado-hyperx.jpg",
+  "stock": 8,
+  "activo": true,
+  "categoria": "Periféricos"
+},
+{
+  "sku": "MON-001",
+  "marca": "Samsung",
+  "nombre": "Monitor LED 24 pulgadas",
+  "precio": 699000,
+  "foto": "images/monitor-samsung.jpg",
+  "stock": 5,
+  "activo": true,
+  "categoria": "Pantallas"
+},
+{
+  "sku": "AUD-002",
+  "marca": "JBL",
+  "nombre": "Parlante portátil Flip 6",
+  "precio": 499000,
+  "foto": "images/parlante-jbl.jpg",
+  "stock": 15,
+  "activo": true,
+  "categoria": "Audio"
+},
+{
+  "sku": "ALM-001",
+  "marca": "Seagate",
+  "nombre": "Disco duro externo 1TB",
+  "precio": 239000,
+  "foto": "images/disco-seagate.jpg",
+  "stock": 20,
+  "activo": true,
+  "categoria": "Almacenamiento"
+},
+{
+  "sku": "TEC-004",
+  "marca": "Logitech",
+  "nombre": "Webcam C920 HD Pro",
+  "precio": 349000,
+  "foto": "images/webcam-logitech.jpg",
+  "stock": 10,
+  "activo": true,
+  "categoria": "Periféricos"
+}
 ]

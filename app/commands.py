@@ -10,65 +10,57 @@ Estos comandos se registran en create_app().
 """
 
 import json
-import os
-
+from flask.cli import with_appcontext
 import click
+from app.extensions import db
+from app.models import Categoria, Producto
 
-from .extensions import db
-from .models import Categoria, Producto
+@click.command("init-db")
+@with_appcontext
+def init_db():
+    db.create_all()
+    click.echo("Base de datos creada.")
 
-RUTA_PRODUCTOS = os.path.join(os.path.dirname(__file__), "data", "productos.json")
+@click.command("reset-db")
+@with_appcontext
+def reset_db():
+    db.drop_all()
+    db.create_all()
+    click.echo("Base de datos reiniciada.")
 
+@click.command("seed-db")
+@with_appcontext
+def seed_db():
+    with open("app/data/productos.json") as f:
+        data = json.load(f)
 
-def registrar_comandos(app):
-    """Asocia los comandos a la aplicación Flask recibida."""
+    for item in data:
+        categoria = Categoria.query.filter_by(nombre=item["categoria"]).first()
+        if not categoria:
+            categoria = Categoria(nombre=item["categoria"])
+            db.session.add(categoria)
+            db.session.flush()
 
-    @app.cli.command("init-db")
-    def init_db():
-        """Crea todas las tablas definidas en models.py."""
-        # TODO 1: Llama a db.create_all() para crear las tablas.
-        # TODO 2: Muestra un mensaje de confirmación con click.echo(...)
-        pass
+        if Producto.query.filter_by(sku=item["sku"]).first():
+            continue
 
-    @app.cli.command("reset-db")
-    def reset_db():
-        """Borra y vuelve a crear todas las tablas (¡pierde los datos!)."""
-        # TODO 3: Llama a db.drop_all() y luego a db.create_all()
-        # TODO 4: Muestra un mensaje de confirmación
-        pass
+        producto = Producto(
+            sku=item["sku"],
+            marca=item["marca"],
+            nombre=item["nombre"],
+            precio=item["precio"],
+            foto=item.get("foto"),
+            stock=item.get("stock", 0),
+            activo=item.get("activo", True),
+            categoria_id=categoria.id
+        )
+        db.session.add(producto)
 
-    @app.cli.command("seed-db")
-    def seed_db():
-        """Carga los productos de productos.json en la base de datos."""
+    db.session.commit()
+    click.echo("Datos insertados.")
 
-        # --- Leer el archivo JSON -------------------------------------
-        # TODO 5: Abre RUTA_PRODUCTOS con encoding="utf-8" y usa
-        #         json.load() para obtener la lista de productos.
-        # datos = ...
+def init_app(app):
+    app.cli.add_command(init_db)
+    app.cli.add_command(reset_db)
+    app.cli.add_command(seed_db)
 
-        # --- Insertar categorías y productos --------------------------
-        # Por cada producto del JSON debes:
-        #
-        # TODO 6: Buscar si su categoría ya existe en la base de datos:
-        #         categoria = Categoria.query.filter_by(
-        #             nombre=item["categoria"]).first()
-        #
-        # TODO 7: Si no existe, crearla y agregarla a la sesión:
-        #         categoria = Categoria(nombre=item["categoria"])
-        #         db.session.add(categoria)
-        #         db.session.flush()   # asigna el id sin confirmar aún
-        #
-        # TODO 8: Evitar duplicados: si ya existe un Producto con ese sku
-        #         (Producto.query.filter_by(sku=item["sku"]).first()),
-        #         saltarlo con 'continue'.
-        #
-        # TODO 9: Crear el objeto Producto con los datos del JSON y
-        #         asignarle categoria_id=categoria.id, luego
-        #         db.session.add(producto)
-
-        # --- Confirmar la transacción ---------------------------------
-        # TODO 10: Llama a db.session.commit() para guardar TODO de una
-        #          vez. Hasta este momento nada se ha escrito en disco.
-
-        # TODO 11: Muestra cuántos productos se cargaron con click.echo(...)
-        pass
